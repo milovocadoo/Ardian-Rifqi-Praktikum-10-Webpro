@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Sapa AJAX dan PHP</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f5f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            width: 350px;
+            padding: 25px 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 { text-align: center; font-size: 20px; margin-bottom: 25px; }
+        label { font-size: 12px; display: block; margin-bottom: 7px; }
+        input {
+            width: 100%; padding: 9px; border: 1px solid #ddd;
+            border-radius: 5px; margin-bottom: 15px;
+        }
+        button {
+            display: block; margin: auto; padding: 9px 18px;
+            background-color: #007bff; color: white; border: none;
+            border-radius: 5px; cursor: pointer;
+        }
+        button:hover { background-color: #0056b3; }
+        h3 { text-align: center; font-size: 16px; margin-top: 20px; }
+        #hasil {
+            padding: 12px; border-radius: 5px; font-size: 12px;
+            background-color: #f8f8f8; border: 1px solid #ddd;
+            margin-top: 10px; min-height: 40px;
+        }
+        .sukses {
+            background-color: #e5ffe9 !important;
+            border-color: #9cdda8 !important; color: #237b36;
+        }
+        .error {
+            background-color: #ffe8e8 !important;
+            border-color: #ffaaaa !important; color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Form Sapa Menggunakan AJAX dan PHP</h2>
+        <form id="formSapa">
+            <label for="nama">Masukkan Nama Anda:</label>
+            <input type="text" id="nama" name="nama" placeholder="Contoh: Alex">
+            <button type="submit">Kirim</button>
+        </form>
+
+        <h3>Respon Server:</h3>
+        <div id="hasil">Menunggu input...</div>
+    </div>
+
+    <script>
+        const form = document.getElementById("formSapa");
+        const hasil = document.getElementById("hasil");
+
+        form.addEventListener("submit", function(event) {
+            // Mencegah halaman melakukan reload
+            event.preventDefault();
+
+            // Mengambil nilai input nama
+            const nama = document.getElementById("nama").value.trim();
+
+            // Validasi input
+            if (nama === "") {
+                hasil.textContent = "Input nama tidak boleh kosong!";
+                hasil.className = "error";
+                return;
+            }
+
+            // Menampilkan pesan sementara
+            hasil.textContent = "Memproses...";
+            hasil.className = "";
+
+            // Mengirim data ke server.php menggunakan AJAX
+            const data = new FormData();
+            data.append("nama", nama);
+
+            fetch("server.php", {
+                method: "POST",
+                body: data
+            })
+            .then(response => response.text())
+            .then(data => {
+                hasil.textContent = data;
+                if (data.includes("Halo,")) {
+                    hasil.className = "sukses";
+                } else {
+                    hasil.className = "error";
+                }
+            })
+            .catch(error => {
+                hasil.textContent = "Terjadi kesalahan saat menghubungi server.";
+                hasil.className = "error";
+            });
+        });
+    </script>
+</body>
+</html>
